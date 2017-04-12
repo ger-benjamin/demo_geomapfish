@@ -5,6 +5,39 @@ from c2cgeoportal.lib.cacheversion import get_cache_version
 <!DOCTYPE html>
 <html lang="{{mobileCtrl.lang}}" ng-app="demo" ng-controller="MobileController as mainCtrl">
   <head>
+    <!-- Doesn't work probably because of the mobile detection -->
+    <script src="https://cdn.polyfill.io/v2/polyfill.js"></script>
+    <!-- So add window.requestAnimationFrame manually -->
+    <!-- It will work but with poor performances (and maybe others hidden bugs)-->
+    <script>
+      (function() {
+          var lastTime = 0;
+          var date = new Date;
+          var startTime = date.getTime();
+          var vendors = ['ms', 'moz', 'webkit', 'o'];
+          for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+              window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+              window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+                                         || window[vendors[x]+'CancelRequestAnimationFrame'];
+          }
+      
+          if (!window.requestAnimationFrame)
+              window.requestAnimationFrame = function(callback, element) {
+                  var date1 = new Date;
+                  var currTime = date1.getTime();
+                  var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                  var id = window.setTimeout(function() { callback(currTime - startTime); }, 
+                    timeToCall);
+                  lastTime = currTime + timeToCall;
+                  return id;
+              };
+      
+          if (!window.cancelAnimationFrame)
+              window.cancelAnimationFrame = function(id) {
+                  clearTimeout(id);
+              };
+      }());
+    </script>
     <title>{{'Mobile Application'|translate}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
