@@ -10,6 +10,10 @@ from c2cgeoportal.lib.cacheversion import get_cache_version
     <!-- So add window.requestAnimationFrame manually -->
     <!-- It will work but with poor performances (and maybe others hidden bugs)-->
     <script>
+      if (!window.requestAnimationFrame) {
+        alert('Your browser is not supported, please updates it or use another one.');
+        throw new Error('Browser is not supported')
+      }
       (function() {
           var lastTime = 0;
           var date = new Date;
@@ -237,7 +241,6 @@ ${ ',\n'.join([
     for lang in request.registry.settings["available_locale_names"]
 ]) | n}
         };
-
         var module = angular.module('demo');
         module.constant('defaultTheme', 'Demo');
         module.constant('defaultLang', '${request.registry.settings["default_locale_name"]}');
