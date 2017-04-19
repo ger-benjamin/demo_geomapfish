@@ -210,6 +210,20 @@ Ext.onReady(function() {
             outputTarget: "featuregrid-container",
             csvIncludeHeader: true,
             globalSelection: true,
+            customActionButtons: [{
+                text: OpenLayers.i18n('Edit these features'),
+                handler: function() {
+                    var selection = this.featureGridReference.currentGrid.selection;
+                    var ids = [];
+                    for (var i = 0; i < selection.length; i++) {
+                        var id = selection[i].data.osm_id;
+                        if (id) {
+                            ids.push(id);
+                        }
+                    }
+                    window.location = 'https://example.com/?ids=' + ids.join(',');
+                }
+            }],
 % else:
             ptype: "cgxp_featureswindow",
             themes: THEMES,
