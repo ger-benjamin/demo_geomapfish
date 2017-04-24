@@ -222,6 +222,14 @@ Ext.onReady(function() {
                         }
                     }
                     window.location = 'https://example.com/?ids=' + ids.join(',');
+                },
+                menuHandler: function(msg) {
+                    myCustomMenu = this.selectionActionButton.menu.items.get(2);
+                    if (this.currentGrid.title === OpenLayers.i18n('bus_stop')) {
+                      myCustomMenu.enable();
+                    } else {
+                      myCustomMenu.disable();
+                    } 
                 }
             }],
 % else:
