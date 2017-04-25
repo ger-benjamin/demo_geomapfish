@@ -134,6 +134,7 @@ include =
     plugins/ZoomToExtent.js #GXP
     plugins/NavigationHistory.js #GXP
     proj4js/lib/projCode/merc.js
+    Proj/customMenuActionPlugin.js
 
 [edit.js]
 root =
