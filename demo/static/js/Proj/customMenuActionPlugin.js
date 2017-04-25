@@ -65,15 +65,16 @@ bl.CustomMenuActionPlugin = function(ctx) {
                 text: OpenLayers.i18n('Edit these features'),
                 handler: function() {
                     var selection = this._ctx.currentGrid.selection;
-                    var ids = [];
+                    var fid, ids = [];
                     for (var i = 0; i < selection.length; i++) {
-                        var id = selection[i].data.fid;
-                        if (id) {
-                            ids.push(id);
+                        fid = selection[i].data.fid;
+                        if (fid) {
+                            // Remove the layer name part then add the id.
+                            ids.push(fid.split('.')[1]);
                         }
                     }
                     window.location = 'https://example.com/?ids=' + ids.join(',');
-                }
+                }.bind(this)
             }
     
             // Add the custom menu
