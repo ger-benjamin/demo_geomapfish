@@ -76,6 +76,83 @@ Ext.onReady(function() {
         serverResolutions: [4000,3750,3500,3250,3000,2750,2500,2250,2000,1750,1500,1250,1000,750,650,500,250,100,50,20,10,5,2.5,2,1.5,1,0.5,0.25,0.1,05]
     }, WMTS_BASE_OPTIONS);
 
+    // Plugin to add a multiAttributeEdition button to the feature grid.
+    // Called in the featuregrid below.
+    var customMenuActionPlugin_ = {initialized_: false};
+    var getCustomActionPlugin = function(ctx) {
+        if (customMenuActionPlugin_.initialized) {
+          return customMenuActionPlugin_;
+        }
+
+        var actionMainMenu = ctx.selectionActionButton.menu;
+
+        // Function to know if the button must be added in the
+        // current context.
+        customMenuActionPlugin_.buttonMustBeAdded = function() {
+          // Is the layer on which we want the multiple edition button ?
+          var IsGoodLayer = ctx.currentGrid.title === OpenLayers.i18n('polygon');
+          // Have the data a fid ?
+          var hasIds = function() {
+              var selection = ctx.featureGridReference.currentGrid.selection;
+              for (var i = 0; i < selection.length; i++) {
+                  if (selection[i].data.fid !== undefined) {
+                    return true;
+                  }
+              }
+              return false;
+          }.bind(ctx)();
+          return IsGoodLayer && hasIds;
+        }.bind(ctx);
+
+        // Function to create and add the custom menu to the mainActionMenu.
+        customMenuActionPlugin_.addCustomMenu = function() {
+            // Create a custom action menu with function to open a link
+            // with the ids of current selected lines in params.
+            var myCustomActionMenu = {
+                text: OpenLayers.i18n('Edit these features'),
+                handler: function() {
+                    var selection = ctx.currentGrid.selection;
+                    var ids = [];
+                    for (var i = 0; i < selection.length; i++) {
+                        var id = selection[i].data.fid;
+                        if (id) {
+                            ids.push(id);
+                        }
+                    }
+                    window.location = 'https://example.com/?ids=' + ids.join(',');
+                }
+            }
+            // Add the custom menu
+            actionMainMenu.addMenuItem(myCustomActionMenu);
+            customMenuActionPlugin_.repaintMenu_(true);
+        }.bind(ctx);
+        
+        // Function to remove the cutom menu from the mainActionMenu.
+        customMenuActionPlugin_.removeCustomMenu = function() {
+            actionMainMenu.remove(actionMainMenu.items.get(2));
+            customMenuActionPlugin_.repaintMenu_(false);
+        };
+
+        // Function repaint the menu - Pass through a visual bug
+        // from adding a menu on the fly.
+        // The params says if we have added a menu or not the
+        // repaint the menu at the right height.
+        customMenuActionPlugin_.repaintMenu_ = function(wasAdded) {
+            var pos = actionMainMenu.getPosition();
+            var elementHeight = actionMainMenu.items.get(0).getEl().getHeight();
+            elementHeight = elementHeight + 2 // + 2 for margin
+            if (wasAdded) {
+              elementHeight = elementHeight * -1;
+            }
+            pos = [pos[0], pos[1] + elementHeight];
+            actionMainMenu.hide();
+            actionMainMenu.showAt(pos);
+        };
+
+        customMenuActionPlugin_.initialized_ = true;
+        return customMenuActionPlugin_;
+    }
+
     app = new gxp.Viewer({
         portalConfig: {
             ctCls: 'x-map',
@@ -211,25 +288,16 @@ Ext.onReady(function() {
             csvIncludeHeader: true,
             globalSelection: true,
             customActionButtons: [{
-                text: OpenLayers.i18n('Edit these features'),
-                handler: function() {
-                    var selection = this.featureGridReference.currentGrid.selection;
-                    var ids = [];
-                    for (var i = 0; i < selection.length; i++) {
-                        var id = selection[i].data.osm_id;
-                        if (id) {
-                            ids.push(id);
-                        }
+                menuHandler: function() {
+                    var customMenuActionPlugin = getCustomActionPlugin(this);
+                    var actionMainMenu = this.selectionActionButton.menu;
+                    // Create and add the menu if it should be added.
+                    // Otherwise remove it if exists
+                    if (customMenuActionPlugin.buttonMustBeAdded() && actionMainMenu.items.length < 3) {
+                        customMenuActionPlugin.addCustomMenu();
+                    } else if (!customMenuActionPlugin.buttonMustBeAdded() && actionMainMenu.items.length > 2) {
+                        customMenuActionPlugin.removeCustomMenu();
                     }
-                    window.location = 'https://example.com/?ids=' + ids.join(',');
-                },
-                menuHandler: function(msg) {
-                    myCustomMenu = this.selectionActionButton.menu.items.get(2);
-                    if (this.currentGrid.title === OpenLayers.i18n('bus_stop')) {
-                      myCustomMenu.enable();
-                    } else {
-                      myCustomMenu.disable();
-                    } 
                 }
             }],
 % else:
