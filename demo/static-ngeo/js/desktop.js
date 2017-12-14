@@ -19,6 +19,8 @@ goog.require('ngeo.googlestreetviewComponent');
 goog.require('ngeo.proj.EPSG2056');
 /** @suppress {extraRequire} */
 goog.require('ngeo.proj.EPSG21781');
+/** @suppress {extraRequire} */
+goog.require('demo.layertree.gmfLayertreeCustomization');
 
 
 /**

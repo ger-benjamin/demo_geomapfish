@@ -380,6 +380,7 @@ ${ ',\n'.join([
                 {action: 'add_layer', title: 'Add a layer'}
         ]);
         module.constant('gmfContextualdatacontentTemplateUrl', demo.componentsBaseTemplateUrl + '/contextualdata/contextualdata.html');
+        module.constant('gmfDefaultDimensions', {TimeForOsmTimeRS: '1970-01-01/2999-12-31'});
         module.value('ngeoWfsPermalinkOptions', /** @type {ngeox.WfsPermalinkOptions} */ ({
               url: '${request.route_url('mapserverproxy') | n}',
               wfsTypes: ${dumps(wfs_types) | n},
