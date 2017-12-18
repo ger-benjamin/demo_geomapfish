@@ -7,11 +7,11 @@ goog.require('gmf.LayertreeController');
 /**
  * A list of layer name bound to a dimension.
  * Example:  {'my_time_layer': 'time_dimensions_for_my_layer'}
- * @type {Object.<string, string>}
+ * @type {!Object.<string, string>}
  * @private
  */
 gmf.LayertreeController.DIMENSIONS_FOR_WMST_LAYERS = {
-  'osm_time_r_s': 'TimeForOsmTimeRS'
+  'osm_time_r_s': 'time'
 };
 
 /**
@@ -52,10 +52,10 @@ gmf.LayertreeController.prototype.updateWMSTimeLayerState = function(
 
     // ----- customized part (start) -----
     const layername = dataSource.name;
-    if (gmf.LayertreeController.DIMENSIONS_FOR_WMST_LAYERS
-        && Object.keys(gmf.LayertreeController.DIMENSIONS_FOR_WMST_LAYERS).indexOf(layername) > -1) {
-      const dimension = this.formatTimestampForPostreSQL_(time);
-      this.dimensions[gmf.LayertreeController.DIMENSIONS_FOR_WMST_LAYERS[layername]] = dimension;
+    const dimension = gmf.LayertreeController.DIMENSIONS_FOR_WMST_LAYERS[layername]
+    if (dimension) {
+      const pgsql_time = this.formatTimestampForPostreSQL_(time);
+      dataSource.dimensionsConfig[dimension] = pgsql_time;
       // ----- customized part (end) -----
 
     } else {

@@ -977,7 +977,7 @@ LAYER
     DATA "geom FROM (
           SELECT
               regexp_replace(format(\'%s\', name), \'^$\', osm_id::text) AS display_name,
-              '%TimeForOsmTimeRS%' AS my_time,
+              '%time%' AS my_time,
               name,osm_id,type,\"timestamp\",geom
           FROM
               swiss_points) AS foo USING UNIQUE osm_id USING srid=21781"
@@ -1018,8 +1018,8 @@ LAYER
         "wms_timeitem" "timestamp"
     END
     VALIDATION
-      "default_TimeForOsmTimeRS" "1970-01-01/2999-12-31"
-      "TimeForOsmTimeRS" "^[0-9-]*/[0-9-]*$"
+      "default_time" "1970-01-01/2999-12-31"
+      "time" "^[0-9-]*/[0-9-]*$"
     END
 END
 % endfor
