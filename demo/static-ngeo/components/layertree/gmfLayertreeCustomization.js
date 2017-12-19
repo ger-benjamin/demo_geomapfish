@@ -3,6 +3,7 @@
  */
 goog.provide('demo.layertree.gmfLayertreeCustomization');
 goog.require('gmf.LayertreeController');
+goog.require('ol.source.ImageWMS');
 
 /**
  * A list of layer name bound to a dimension.
@@ -54,13 +55,18 @@ gmf.LayertreeController.prototype.updateWMSTimeLayerState = function(
     const layername = dataSource.name;
     const dimension = gmf.LayertreeController.DIMENSIONS_FOR_WMST_LAYERS[layername]
     if (dimension) {
-      const pgsql_time = this.formatTimestampForPostreSQL_(time);
-      dataSource.dimensionsConfig[dimension] = pgsql_time;
+      const source = layertreeCtrl.layer.getSource();
+      if (source && source instanceof ol.source.ImageWMS) {
+        const pgsql_time = this.formatTimestampForPostreSQL_(time);
+        // update query url
+        dataSource.dimensionsConfig[dimension] = pgsql_time;
+        // update getmap url
+        const params = {};
+        params[dimension] = pgsql_time;
+        /** @type {ol.source.ImageWMS} */ (source).updateParams(params);
       // ----- customized part (end) -----
 
-    } else {
-      // Update time value to use WMT-T
-      dataSource.timeRangeValue = time;
+      }
     }
   } else if (layertreeCtrl.children) {
     for (let i = 0, ii = layertreeCtrl.children.length; i < ii; i++) {
